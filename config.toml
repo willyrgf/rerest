@@ -1,0 +1,18 @@
+[http]
+host = "0.0.0.0"
+port = 8080
+
+[redis]
+password = ""
+database_data = 0
+database_control = 1
+host = "127.0.0.1"
+port = 63799
+
+[access]
+    [[access.keys]]
+    name = "doc"
+    prefix = "doc"
+    type = "set"
+    read_only = true
+

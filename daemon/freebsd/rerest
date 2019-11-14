@@ -1,0 +1,46 @@
+#!/bin/sh
+
+#
+# PROVIDE: rerest
+# REQUIRE: NETWORKING SERVERS
+# KEYWORD:
+
+. /etc/rc.subr
+
+name="rerest"
+rcvar="${name}_enable"
+command="/usr/local/sbin/rerest"
+pidfile="/var/run/${name}.pid"
+logfile="/var/log/${name}.log"
+
+load_rc_config $name
+: ${rerest_enable:="NO"}
+: ${rerest_conf="/usr/local/etc/rerest/config.toml"}
+
+start_cmd="rerest_start"
+stop_cmd="rerest_stop"
+status_cmd="rerest_status"
+
+rerest_start() {
+  REREST_CONF="${rerest_conf}" /usr/sbin/daemon -P ${pidfile} -r -o ${logfile} ${command}
+}
+
+rerest_stop() {
+  if [ -e "${pidfile}" ]; then
+    kill -s TERM `cat ${pidfile}`
+  else
+    echo "${name} is not running"
+  fi
+
+}
+
+rerest_status() {
+ if [ -e "${pidfile}" ]; then
+   echo "${name} is running as pid `cat ${pidfile}`"
+ else
+   echo "${name} is not running"
+ fi
+}
+
+run_rc_command "$1"
+
