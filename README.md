@@ -25,7 +25,7 @@ Usage of ./rerest:
 ```sh
 git clone https://github.com/willyrgf/rerest.git
 cd rerest
-./install.sh
+./build.sh
 ```
 
 ### Configure like a daemon in FreeBSD:
