@@ -28,6 +28,11 @@ cd rerest
 ./build.sh
 ```
 
+### Install using go:
+```sh
+go install github.com/willyrgf/rerest
+```
+
 ### Configure like a daemon in FreeBSD:
 ```sh
 cat <<EOF >> /etc/rc.conf
