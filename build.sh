@@ -2,7 +2,7 @@
 
 set -x
 
-pGOOS=(freebsd)
+pGOOS=(linux freebsd)
 GOARCH=amd64
 
 for GOOS in "${pGOOS[@]}"; do
