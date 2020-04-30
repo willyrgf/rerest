@@ -1,19 +1,69 @@
 #!/usr/bin/env bash
 
-HOST=127.0.0.1
-PORT=63799
-DB=1
-
+# general config
 REDIS_CLI=$(command -v redis-cli) || exit 1
 UUIDGEN=$(command -v uuidgen) || exit 1
+MIN_ARGS=2
 
-[[ -n $1 ]] || exit 1
-desc="$1"
+# redis config
+HOST=127.0.0.1
+PORT=6379
+DB=1
 
-api_key="$(uuidgen -r)"
+_help() {
+    echo -e "
+Usage: $0 [OPTION]
+Example: $0 -d ExemplaCustomer -t
 
-key="api_key:${api_key}"
+OPTIONS:
+  -d \t\t Description of the new key
+  -t \t\t To create a api key to test
+"
+}
 
+_is_linux() {
+    [[ "${OSTYPE}" == "linux-gnu" ]] 
+}
 
-${REDIS_CLI} -h ${HOST} -p ${PORT} -n ${DB} sadd api_keys:enabled ${key}
-${REDIS_CLI} -h ${HOST} -p ${PORT} -n ${DB} hset ${key} desc "${desc}" enable true count 0 count_auth 0 net_allowed 0.0.0.0/0
+_is_freebsd() {
+    [[ "${OSTYPE}" == "FreeBSD" ]] 
+}
+
+_create_api_key_test() {
+    _create_api_key $@ &&
+        ${REDIS_CLI} -h ${HOST} -p ${PORT} -n ${DB} sadd api_keys:enabled_test ${KEY}
+}
+
+_create_api_key() {
+    ${REDIS_CLI} -h ${HOST} -p ${PORT} -n ${DB} sadd api_keys:enabled ${KEY}
+    ${REDIS_CLI} -h ${HOST} -p ${PORT} -n ${DB} hset ${KEY} desc "${DESC}" enable true count 0 count_auth 0 net_allowed 0.0.0.0/0
+}
+
+if [[ ${#@} -lt ${MIN_ARGS} ]]; then
+    _help
+    exit 1
+fi
+
+while getopts "d:t" OPT; do
+  case "$OPT" in
+    "d")  DESC=${OPTARG};; 
+    "t") TEST=true;;
+  esac
+done
+
+if _is_linux; then
+    api_key="$(${UUIDGEN} -r)"
+elif _is_freebsd; then
+    api_key="$(${UUIDGEN})"
+fi
+
+[[ -n ${DESC} ]] || exit 1
+[[ -n ${api_key} ]] || exit 1
+
+KEY="api_key:${api_key}"
+
+if [[ -n ${TEST} ]]; then
+    _create_api_key_test
+else
+    _create_api_key
+fi
