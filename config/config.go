@@ -28,6 +28,8 @@ type APIConfig struct {
 
 // Rerest basic config
 type Rerest struct {
+	Dev                  bool
+	Trace                bool
 	API                  *APIConfig
 	Access               AccessConf
 	RedisHost            string
@@ -87,13 +89,15 @@ func viperCfg() {
 }
 
 // Parse ReREST configs
-func Parse(cfg *Rerest) (err error) {
+func parse(cfg *Rerest) (err error) {
 	err = viper.ReadInConfig()
 	if err != nil {
 		log.Errorf("config.Parse(): error=%w", err)
 		return
 	}
 
+	cfg.Dev = viper.GetBool("rerest.dev")
+	cfg.Trace = viper.GetBool("rerest.trace")
 	cfg.API.HTTPHost = viper.GetString("http.host")
 	cfg.API.HTTPPort = viper.GetInt("http.port")
 	cfg.RedisHost = viper.GetString("redis.host")
@@ -117,14 +121,32 @@ func Parse(cfg *Rerest) (err error) {
 	return
 }
 
+func logConfig(cfg *Rerest) {
+	log.SetReportCaller(false)
+	log.SetLevel(log.InfoLevel)
+
+	if cfg.Dev {
+		log.SetLevel(log.DebugLevel)
+		log.Debug("init(): dev environment")
+	}
+
+	if cfg.Trace {
+		log.SetLevel(log.TraceLevel)
+		log.SetReportCaller(true)
+		log.Debug("init(): trace enabled")
+	}
+}
+
 // Load configuration
 func Load() {
 	viperCfg()
 	RerestConf = New()
-	err := Parse(RerestConf)
+	err := parse(RerestConf)
 	if err != nil {
 		log.Fatalf("config.Load(): error=%w", err)
 	}
+
+	logConfig(RerestConf)
 
 	log.Debugf("config.Load(): RerestConf=%+v", RerestConf)
 	log.Debugf("config.Load(): RerestConf.Access=%+v", RerestConf.Access)

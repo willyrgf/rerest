@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/valyala/fasthttp"
 	"github.com/willyrgf/rerest/api/handler"
 	"github.com/willyrgf/rerest/config"
 	"github.com/willyrgf/rerest/config/router"
-	"github.com/valyala/fasthttp"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -25,14 +25,14 @@ func init() {
 	log.SetOutput(os.Stdout)
 	log.SetLevel(log.InfoLevel)
 
-	if *trace {
-		log.SetReportCaller(true)
-		log.Debug("init(): trace enabled")
-	}
-
 	if *dev {
 		log.SetLevel(log.DebugLevel)
 		log.Debug("init(): dev environment")
+	}
+
+	if *trace {
+		log.SetReportCaller(true)
+		log.Debug("init(): trace enabled")
 	}
 }
 
