@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # general config
+NULL='/dev/null'
 REDIS_CLI=$(command -v redis-cli) || exit 1
 UUIDGEN=$(command -v uuidgen) || exit 1
 MIN_ARGS=2
@@ -31,12 +32,12 @@ _is_freebsd() {
 
 _create_api_key_test() {
     _create_api_key $@ &&
-        ${REDIS_CLI} -h ${HOST} -p ${PORT} -n ${DB} sadd api_keys:enabled_test ${KEY}
+        ${REDIS_CLI} -h ${HOST} -p ${PORT} -n ${DB} sadd api_keys:enabled_test ${KEY} &> ${NULL}
 }
 
 _create_api_key() {
-    ${REDIS_CLI} -h ${HOST} -p ${PORT} -n ${DB} sadd api_keys:enabled ${KEY}
-    ${REDIS_CLI} -h ${HOST} -p ${PORT} -n ${DB} hset ${KEY} desc "${DESC}" enable true count 0 count_auth 0 net_allowed 0.0.0.0/0
+    ${REDIS_CLI} -h ${HOST} -p ${PORT} -n ${DB} sadd api_keys:enabled ${KEY} &> ${NULL} &&
+        ${REDIS_CLI} -h ${HOST} -p ${PORT} -n ${DB} hset ${KEY} desc "${DESC}" enable true count 0 count_auth 0 net_allowed 0.0.0.0/0 &> ${NULL}
 }
 
 if [[ ${#@} -lt ${MIN_ARGS} ]]; then
@@ -63,7 +64,7 @@ fi
 KEY="api_key:${api_key}"
 
 if [[ -n ${TEST} ]]; then
-    _create_api_key_test
+    _create_api_key_test && echo "${KEY}"
 else
-    _create_api_key
+    _create_api_key && echo "${KEY}"
 fi
