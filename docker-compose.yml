@@ -9,7 +9,7 @@ services:
     depends_on:
       - redis_server
     environment:
-      REREST_CONF: "config.toml"
+      REREST_CONF: "./config.toml"
     volumes:
       - ../rerest/:/rerest
     command: "go run ."
