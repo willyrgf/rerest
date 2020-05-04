@@ -1,0 +1,35 @@
+version: '2.4'
+services:
+  rerest:
+    build:
+      context: ../rerest/
+      dockerfile: Dockerfile
+    links:
+      - redis_server
+    depends_on:
+      - redis_server
+    environment:
+      REREST_CONF: "config.toml"
+    volumes:
+      - ../rerest/:/rerest
+    command: "go run ."
+    restart: always
+    ports:
+        - "8088:8080"
+    networks:
+      - rerest_vnet
+  redis_server:
+    image: redis
+    command: redis-server
+    ports:
+        - "63799:6379"
+    networks:
+      - rerest_vnet
+
+networks:
+  rerest_vnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.99.96.0/24
+
