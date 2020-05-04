@@ -7,7 +7,7 @@ MIN_ARGS=2
 
 # redis config
 HOST=127.0.0.1
-PORT=6379
+PORT=63799
 DB=1
 
 _help() {
