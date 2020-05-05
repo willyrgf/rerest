@@ -3,13 +3,13 @@ package controllers
 import (
 	"fmt"
 
+	log "github.com/sirupsen/logrus"
+	"github.com/valyala/fasthttp"
 	"github.com/willyrgf/rerest/api/middleware"
 	"github.com/willyrgf/rerest/api/responses"
 	"github.com/willyrgf/rerest/config"
 	"github.com/willyrgf/rerest/pkg/account"
 	"github.com/willyrgf/rerest/pkg/repository"
-	log "github.com/sirupsen/logrus"
-	"github.com/valyala/fasthttp"
 )
 
 func getKeyPartsFromURL(ctx *fasthttp.RequestCtx) (kp, ks, k string, ok bool) {
@@ -58,6 +58,19 @@ func GetKey(ctx *fasthttp.RequestCtx) {
 			ctx.Error("error on get key", fasthttp.StatusInternalServerError)
 		}
 		log.Debugf("controllers.GetKey(): set; members=%+v", members)
+
+		answered := responses.Strings(ctx, members)
+		if answered {
+			go account.Response(middleware.GetKeyOfCtx(ctx))
+		}
+		return
+
+	case "list":
+		members, err := repository.GetFromList(key)
+		if err != nil {
+			ctx.Error("error on get key", fasthttp.StatusInternalServerError)
+		}
+		log.Debugf("controllers.GetKey(): list; members=%+v", members)
 
 		answered := responses.Strings(ctx, members)
 		if answered {

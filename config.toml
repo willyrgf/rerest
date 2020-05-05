@@ -20,3 +20,9 @@ port = 6379
     type = "set"
     read_only = true
 
+    [[access.keys]]
+    name = "doclist"
+    prefix = "doclist"
+    type = "list"
+    read_only = true
+
