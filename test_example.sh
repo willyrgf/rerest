@@ -9,22 +9,13 @@ TESTDATADIR="${WORKDIR}/testdata"
 TESTDATAFILE="${WORKDIR}/testdata/example_doc.csv"
 DELIMITER=";"
 SUBDELIMITER=","
-APIKEY=""
 URLBASE="http://127.0.0.1:8088"
+APIKEY=""
 
 # redis config
 HOST=127.0.0.1
 PORT=63799
 DB=0
-
-
-_is_linux() {
-    [[ "${OSTYPE}" == "linux-gnu" ]] 
-}
-
-_is_freebsd() {
-    [[ "${OSTYPE}" == "FreeBSD" ]] 
-}
 
 _insert_redis_example_data() {
     [[ -n "$1" ]] && doc="$1" || exit 1
@@ -59,7 +50,6 @@ _test_api_request() {
         ${CURL} -s -k -L "${URLBASE}/doc/${doc}?api_key=${apikey}" | grep -q "${phone_numbers}" || exit 1
     done 
 }
-
 
 _create_api_key || exit 1
 _insert_example_data || exit 1
