@@ -21,6 +21,12 @@ Usage of ./rerest:
         Enable trace.
 ```
 
+### Test with docker-compose
+```
+docker-compose up --build -d
+./test_example.sh
+```
+
 ### For build:
 ```sh
 git clone https://github.com/willyrgf/rerest.git
