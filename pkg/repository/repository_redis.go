@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/willyrgf/rerest/config"
 	"github.com/garyburd/redigo/redis"
+	log "github.com/sirupsen/logrus"
+	"github.com/willyrgf/rerest/config"
 )
 
 var (
@@ -35,6 +36,12 @@ func initRepo() {
 			return err
 		},
 	}
+
+	err := pool.Get().Err()
+	if err != nil {
+		log.Debugf("repository.initRepo() error=%w", err)
+	}
+
 	repo = pool
 }
 
