@@ -9,7 +9,5 @@ require (
 	github.com/prometheus/common v0.7.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/viper v1.5.0
-	github.com/valyala/fasthttp v1.6.0
-	golang.org/x/tools v0.0.0-20191113232020-e2727e816f5a // indirect
-	google.golang.org/appengine v1.1.0
+	github.com/valyala/fasthttp v1.34.0
 )
